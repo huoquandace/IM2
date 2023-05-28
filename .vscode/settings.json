@@ -1,0 +1,23 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/__init__.py": true,
+        "manage.py": true,
+        "**/__pycache__": true,
+        "project/wsgi.py": true,
+        ".vscode": true,
+        ".vscode/settings.json": true
+    },
+    "hide-files.files": [
+        "**/__init__.py",
+        "manage.py",
+        "**/__pycache__",
+        "project/wsgi.py",
+        ".vscode"
+    ]
+}

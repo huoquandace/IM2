@@ -21,6 +21,7 @@
   // });
     $('#id_supplier').on('change', function() {
       $('.supplier_more').val($('#id_supplier').val())
+      $('#create_with_supplier').click()
     });
 </script>
 {% endblock script %}
@@ -37,7 +38,13 @@
         <div class="pull-left">
           <h4 class="text-blue h4"> {% trans "Select Supplier" %} </h4>
         </div>
-        <div class="pull-right"></div>
+        <div class="pull-right">
+          <form action="{% url 'quote_add' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="create_with_supplier" class="supplier_more" hidden>
+            <input class="btn btn-outline-primary btn-sm show_confirm" type="submit" id='create_with_supplier' value="{% trans 'Add'%}" hidden>
+          </form>
+        </div>
       </div>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -102,7 +109,7 @@
           </thead>
           <tbody>
             {% for product in products %}
-            <tr {% if product in request.user.supplier.products.all %}hidden{% endif %}>
+            <tr>
               <td class="table-plus"> {{ product.id_product }} </td>
               <td> {{ product.name }} </td>
               <td> <img src="{{ product.image.url }}" alt="product_logo" style="height: 50px"> </td>

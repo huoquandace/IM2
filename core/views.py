@@ -171,6 +171,7 @@ def un_reg_prd(request, pk):
 
     return redirect('reg_prd_view')
 
+
 def reg_prd(request, pk):
     print('ok')
     user = get_user_model().objects.get(id=request.user.id)
@@ -184,16 +185,21 @@ def reg_prd(request, pk):
     # time.sleep(1)
     return redirect('reg_prd_view')
 
+def quote_list(request):
+    return render(request, 'quote/list.html', {
+        "quotes": POrder.objects.all(),
+    })
+
 def quote_add(request):
     if request.method == 'POST':
-        form = QuoteAddForm(request.POST, request.FILES)
-        if form.is_valid():
-            quote = form.save()
-            messages.success(request, _("Success"))
-            return redirect('quote_edit', pk=quote.id)
-        else:
-            messages.error(request, form.errors)
-            return redirect('./')
+        supplier_id = request.POST.get('create_with_supplier')
+        if not supplier_id:
+            return redirect('quote_add')
+        supplier = Supplier.objects.get(id=supplier_id)
+        porder = POrder.objects.create(
+            supplier = supplier,
+        )
+        return redirect('quote_edit', pk=porder.id)
             
     return render(request, 'quote/add.html', {
         'form': QuoteAddForm,
@@ -201,6 +207,7 @@ def quote_add(request):
     })
 
 def quote_edit(request, pk):
+    supplier = Supplier.objects.get(account = request.user)
     quote = POrder.objects.get(id=pk)
     product_quote_detail = [x.product for x in quote.porderdetail_set.all()]
     if request.method == 'POST':
@@ -212,12 +219,12 @@ def quote_edit(request, pk):
         else:
             messages.error(request, form.errors)
             return redirect('product_add')
-        
+    
     return render(request, 'quote/edit.html', {
         'quote': quote,
         'product_quote_detail': product_quote_detail,
         'form': QuoteAddForm(request.POST or None, instance=quote),
-        'products': Product.objects.all(),
+        'products': supplier.products.all(),
         'quote_details': quote.porderdetail_set.all(),
     })
 
@@ -269,7 +276,7 @@ def quote_add_before(request, pk):
 def quote_s_list(request):
     supplier = Supplier.objects.get(account = request.user)
     return render(request, 'quote/s_list.html', {
-        'quotes': POrder.objects.filter(supplier=supplier).order_by('-id'),
+        'quotes': POrder.objects.filter(~Q(status='draft'), supplier=supplier).order_by('-id'),
     })
 
 def quote_s_quote(request, pk):
@@ -287,3 +294,25 @@ def quote_s_quote_update(request, pk):
         return redirect('quote_s_quote', quote_detail.porder.id)
     quote_detail.save()
     return redirect('quote_s_quote', quote_detail.porder.id)
+
+def quote_delete(request, pk):
+    POrder.objects.get(id=pk).delete()
+    time.sleep(1)
+    return redirect('quote_list')
+
+
+def quote_request(request, pk):
+    quote = POrder.objects.get(id=pk)
+    quote.status = 'new'
+    quote.save()
+    messages.success(request, _('Send request successfully'))
+    return redirect('quote_list')
+
+def quote_reject(request, pk):
+    quote = POrder.objects.get(id=pk)
+    if request.POST.get('note') is not None:
+        quote.note = request.POST.get('note')
+    quote.status = 'reject'
+    quote.save()
+    messages.warning(request, _('Reject request sent'))
+    return redirect('quote_s_list')

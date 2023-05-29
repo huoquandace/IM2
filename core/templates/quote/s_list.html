@@ -80,7 +80,7 @@
 								{% csrf_token %}
 								{% comment %} <input name="_method" type="hidden" value="DELETE">
 								<button type="submit" class="btn btn-xs btn-danger btn-flat show_confirm" data-toggle="tooltip" title='Delete'>Delete</button> {% endcomment %}
-								<a href="#" type="submit" class="show_confirm"><i class="dw dw-delete-3"></i> {% trans "Delete" %}</a>
+								{% comment %} <a href="#" type="submit" class="show_confirm"><i class="dw dw-delete-3"></i> {% trans "Delete" %}</a> {% endcomment %}
 							{% comment %} </form> {% endcomment %}
 						</div>
 					</td>

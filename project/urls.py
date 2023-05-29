@@ -31,6 +31,7 @@ urlpatterns += i18n_patterns (
     path('supplier/un_reg_prd/<int:pk>/', un_reg_prd, name='un_reg_prd'),
     path('supplier/reg_prd/<int:pk>/', reg_prd, name='reg_prd'),
 
+    path('quote/list/', quote_list, name='quote_list'),
     path('quote/add/', quote_add, name='quote_add'),
     path('quote/detail/<int:pk>', quote_detail_edit_save, name='quote_detail_edit_save'),
     path('quote/add/detail/<int:quote_id>/<int:product_id>', quote_add_detail, name='quote_add_detail'),
@@ -40,6 +41,9 @@ urlpatterns += i18n_patterns (
     path('quote/s/list', quote_s_list, name='quote_s_list'),
     path('quote/s/quote/<int:pk>', quote_s_quote, name='quote_s_quote'),
     path('quote/s/quote/update/<int:pk>', quote_s_quote_update, name='quote_s_quote_update'),
+    path('quote/delete/<int:pk>/', quote_delete, name='quote_delete'),
+    path('quote/request/<int:pk>/', quote_request, name='quote_request'),
+    path('quote/reject/<int:pk>/', quote_reject, name='quote_reject'),
 
     # prefix_default_language=False
 )

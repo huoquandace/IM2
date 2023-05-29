@@ -43,9 +43,10 @@ class POrder(models.Model):
     label = models.CharField(_("label"), max_length=255, null=True, blank=True)
     supplier = models.ForeignKey(Supplier, verbose_name=_("supplier"), on_delete=models.CASCADE)
     order_date = models.DateField(_("order date"), null=True, blank=True)
-    status = models.CharField(_("status"), max_length=255, null=True, blank=True, default="new")
+    status = models.CharField(_("status"), max_length=255, null=True, blank=True, default="draft")
     created_at = models.DateTimeField(auto_now=True, editable=False)
     total = models.IntegerField(_("total"), null=True, blank=True)
+    note = models.TextField(_("note"), null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.label = "PUR-" + str(POrder.objects.count()+1)
@@ -56,7 +57,11 @@ class POrder(models.Model):
     def total_item(self):
         return sum([x.quantity for x in self.porderdetail_set.all()])
     def estimated_bill(self):
-        return sum([x.quantity*x.price for x in self.porderdetail_set.all()])
+        sum = 0
+        for porderdetail in self.porderdetail_set.all():
+            if porderdetail.price is not None:
+                sum += porderdetail.price * porderdetail.quantity
+        return sum
     
 
 

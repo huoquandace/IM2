@@ -21,6 +21,7 @@
   // });
     $('#id_supplier').on('change', function() {
       $('.supplier_more').val($('#id_supplier').val())
+      $('#edit_with_supplier').click()
     });
 
     $('.quantity').on('change', function() {
@@ -43,7 +44,13 @@
         <div class="pull-left">
           <h4 class="text-blue h4"> {% trans "Select Supplier" %} </h4>
         </div>
-        <div class="pull-right"></div>
+        <div class="pull-right">
+          <form action="{% url 'quote_edit' quote.id%}" method="post">
+            {% csrf_token %}
+            <input type="text" name="edit_with_supplier" class="supplier_more" hidden>
+            <input class="btn btn-outline-primary btn-sm show_confirm" type="submit" id='edit_with_supplier' value="{% trans 'Edit'%}" hidden>
+          </form>
+        </div>
       </div>
       <form method="post" enctype="multipart/form-data"y>
         {% csrf_token %}

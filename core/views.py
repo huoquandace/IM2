@@ -186,8 +186,13 @@ def reg_prd(request, pk):
     return redirect('reg_prd_view')
 
 def quote_list(request):
+    quotes = POrder.objects.all()
+    quotes_filter = []
+    for quote in quotes:
+        if quote.porderdetail_set.all().count() > 0:
+            quotes_filter.append(quote)
     return render(request, 'quote/list.html', {
-        "quotes": POrder.objects.all(),
+        "quotes": quotes_filter,
     })
 
 def quote_add(request):
@@ -211,20 +216,20 @@ def quote_edit(request, pk):
     quote = POrder.objects.get(id=pk)
     product_quote_detail = [x.product for x in quote.porderdetail_set.all()]
     if request.method == 'POST':
-        form = QuoteAddForm(request.POST, request.FILES, instance=quote)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _("Success"))
-            return redirect('product_list')
-        else:
-            messages.error(request, form.errors)
-            return redirect('product_add')
+        supplier_id = request.POST.get('edit_with_supplier')
+        if not supplier_id:
+            messages.warning(request, 'Must have a supplier')
+            return redirect('quote_edit', quote.id)
+        supplier_more = Supplier.objects.get(id=supplier_id)
+        quote.supplier = supplier_more
+        quote.save()
+        return redirect('quote_edit', pk=quote.id)
     
     return render(request, 'quote/edit.html', {
         'quote': quote,
         'product_quote_detail': product_quote_detail,
         'form': QuoteAddForm(request.POST or None, instance=quote),
-        'products': supplier.products.all(),
+        'products': quote.supplier.products.all(),
         'quote_details': quote.porderdetail_set.all(),
     })
 
